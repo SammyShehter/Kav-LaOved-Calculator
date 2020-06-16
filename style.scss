@@ -126,6 +126,7 @@ input{
 }
 
 #div_form{
+    @include flex-common;
     margin-top:7vh;
 
     input{
@@ -134,7 +135,7 @@ input{
 
     table{
         @include flex-common;
-        width: 100%;
+        width: 50%;
         tr{
             display: flex;
             justify-content: space-between;
