@@ -1,4 +1,4 @@
-﻿last_update = "21.5.2018"
+﻿last_update = "15.6.2020"
 
 NUM_WORKER_TYPES = 5;
 LANG = 1;
@@ -12,8 +12,8 @@ AGRICULTURAL_WORKER_FORM = 3;
 MONTHLHY_WORKER_FORM = 4;
 
 //If wanting to add a language, add it here and add it to languages.js in this order
-var langs = ['en','he','th'];
-var langsLabel = ['English','עברית','Thai'];
+const langs = ['en','he','th','ru'];
+const langsLabel = ['English','עברית','Thai','Русский'];
 
 var forms = [];
 
@@ -63,7 +63,41 @@ function updateCleaningEmployeeExpansionDateLabel() {
 	$('#cleaningEmployeeExpansionDateLabel')[0].innerHTML = dateToString(updatedDate,1);
 }
 
+
+
+
 function initPage() {
+	const div_main = $("#div_main");
+	const div_form = $("#div_form");
+
+	const languagesButtons = () => {
+		let languagesWrap = '<div class="languagesWrapper">';
+		for(let i in langs) {
+			languagesWrap +=` <input id="lang${i}" type="button" value="${langsLabel[i]}" onClick="setLang(${i});"/> `
+		}
+		languagesWrap += '</div>'
+		return languagesWrap;
+	}
+
+	const printAndResetButtons = () => {
+		let printAndResetStruct = '<div class="printAndReset"> ';
+		printAndResetStruct += ` <input type="button" value="${STR.print[LANG]}" onClick="printOutput();"/> `;
+		printAndResetStruct += ` <input type="button" value="${STR.reset[LANG]}" onClick="resetOutput();"/> `;
+		printAndResetStruct +=' </div>';
+		return printAndResetStruct;
+	}
+
+	const workTypes = () => {
+		let workType = '<div class="workTypes"> ';
+		for(var i = 0; i < NUM_WORKER_TYPES; i++){
+			workType +='<input id="option'+i+'" type="button" value="'+ STR.type_buttons[i][LANG] +'" onClick="showForm('+i+');"/> ';
+			div_form.append('<table id="form'+i+'"></table>');
+			forms[i] = new Form(i);
+		}
+		workType +=' </div> ';
+		return workType;
+	}
+	
 
 	//setting the text direction globally
 	if(isPageLtr())
@@ -73,20 +107,22 @@ function initPage() {
 
 	$('#div_output_donation').hide();
 
-	$("#div_main").append('Calculator from: ' + last_update + "<br/>");
-	
-	for(let i in langs){
-		$("#div_main").append('<input id="lang'+i+'" type="button" value="'+langsLabel[i]+'" onClick="setLang('+i+');"/><br/> ');
-	}
+	div_main.append(`
+	<div class="lastUpdate">Calculator from: ${last_update} </div>
+	<div class="headerMenu">
+		${languagesButtons()}
+		<div>
+			<h2>קו לעובד</h2>
+			<h2>Workers's Hotline</h2>
+			<h2>عنوان العامل</h2>
+		</div>
+		${printAndResetButtons()}
+	</div>
+	`)
 
-	$("#div_main").append('<input type="button" value="'+STR.print[LANG]+'" onClick="printOutput();"/> ');
-	$("#div_main").append('<input type="button" value="'+STR.reset[LANG]+'" onClick="resetOutput();"/><br/>');
+	div_main.append(workTypes());
 
-	for(var i = 0; i < NUM_WORKER_TYPES; i++){
-		$("#div_main").append('<input id="option'+i+'" type="button" value="'+ STR.type_buttons[i][LANG] +'" onClick="showForm('+i+');"/> ');
-		$("#div_form").append('<table id="form'+i+'"></table>');
-		forms[i] = new Form(i);
-	}
+
 	//Cleaning Employee Type
 	formElement25 = "<tr id='formElementRow25-%d'><td>"+STR.cleaning_type[LANG] + ":</td><td>" 
 		+ "<input type='radio' id='formElement25-%d' name='cleaning_type' onClick='updateCleaningEmployeeExpansionDateLabel()' value='1' checked='checked'/>" + STR.cleaning_private[LANG] 
